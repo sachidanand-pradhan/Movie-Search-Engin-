@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movies Search</title>
+</head>
+<style>
+    * {
+        background-color: black;
+        color: white;
+    }
+
+    #container {
+        width: 1100px;
+        display: grid;
+        grid-template-columns: repeat(4, 23%);
+        grid-gap: 10px;
+        margin: 20px auto;
+        background-color: black;
+    }
+
+    img {
+        width: 100%;
+        height: 150px;
+        /* border-radius: 20px; */
+    }
+
+    #container div {
+        /* border: 2px solid red; */
+        border-radius: 5px;
+    }
+
+    #container p {
+        margin-left: 10px;
+    }
+
+    #container button {
+        margin-bottom: 10px;
+        background-color: gray;
+        color: aqua;
+        border-radius: 10px;
+        padding: 6px;
+    }
+
+    .search {
+        width: 300px;
+        margin: auto;
+        /* border: 2px solid white; */
+        text-align: center;
+    }
+
+    .search p {
+        font-size: 20px;
+    }
+
+    .search input {
+        height: 20px;
+    }
+
+    #details {
+        width: 80%;
+        height: 300px;
+        display: grid;
+        grid-template-columns: 29% 60%;
+        grid-gap: 5px;
+        margin: 20px auto;
+        /* background-color: black; */
+        /* border: 2px solid green; */
+        justify-content: center;
+    }
+
+    #details img {
+        /* margin-top: 5px; */
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 340px;
+        /* border-radius: 20px; */
+    }
+
+    #details div {
+        /* border: 2px solid grey; */
+        background-color: grey;
+        border-radius: 5px;
+        color: black;
+
+
+    }
+
+    #details p {
+        margin-left: 30px;
+        margin-top: 20px;
+        background-color: grey;
+        color: black;
+        font-weight: bold;
+    }
+
+    #container {
+        margin-top: 20px;
+    }
+
+    #details {
+        margin-bottom: 63px;
+        display: none;
+    }
+
+    #details div:nth-child(2) {
+        height: 340px;
+        width: 60%;
+    }
+
+    #details div:nth-child(1) {
+        height: 340px;
+        width: 29%;
+    }
+
+    #details div:nth-child(1) p {
+        text-align: center;
+        font-size: 30px;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+    }
+
+    #error {
+        display: none;
+        width: 500px;
+        height: 500px;
+        margin: auto;
+    }
+
+    #error img {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<body>
+    <div class="search">
+        <p>Search Movies Name</p>
+        <input type="text" id="movie" placeholder="Enter movies title" />
+        <button onclick="getMovies()">Search</button>
+    </div>
+    <div id="error"></div>
+    <div id="details"></div>
+    <div id="container"></div>
+</body>
+<script>
+
+    // let container = document.getElementById('container');
+    // let details = document.getElementById('details');
+
+
+    async function getMovies() {
+        let movie = document.getElementById('movie').value;
+
+        let res = await fetch(
+            `https://www.omdbapi.com/?s=${movie}&apikey=${65714494}`,
+        );
+
+        let data = await res.json();
+
+        if (data.Search == undefined) {
+            alert('Movie not found');
+        } else {
+            showMovie(data);
+        }
+    }
+
+    let container = document.getElementById('container');
+
+    function showMovie(movies) {
+        container.innerHTML = null;
+
+        movies.Search.forEach(function (movie) {
+            let div = document.createElement('div');
+
+            let img = document.createElement('img');
+
+            img.src = movie.Poster;
+
+            let name = document.createElement('p');
+
+            name.innerText = 'Title: ' + movie.Title;
+
+            let year = document.createElement('p');
+
+            year.innerText = 'Year: ' + movie.Year;
+
+            let imdbID = document.createElement('p');
+
+            imdbID.innerText = movie.imdbID;
+
+            let button = document.createElement('button');
+            button.innerText = 'Details';
+
+            button.addEventListener('click', function () {
+                imb(movie.imdbID);
+            });
+
+            button.setAttribute('style', 'margin-left:10px');
+
+            div.append(img, name, year, imdbID, button);
+
+            // container.style.marginTop = "15px";
+            container.append(div);
+        });
+    }
+
+    let details = document.getElementById('details');
+
+    async function imb(IMDbId) {
+        let res = await fetch(
+            `http://www.omdbapi.com/?i=${IMDbId}&apikey=65714494`,
+        );
+        let data = await res.json();
+        console.log('imdb key --', data);
+
+        details.innerText = null;
+        // if(data.imdbRating > 8.5)
+        details.style.display = "flex";
+
+        let left = document.createElement("div");
+        let right = document.createElement("div");
+
+        let tag = document.createElement("p");
+
+
+
+        let img = document.createElement("img");
+
+        img.src = data.Poster;
+
+        if (data.imdbRating > 8.2) {
+            tag.textContent = "Recommended";
+            tag.style.color = "gold";
+            img.style.height = "310px"
+            left.append(tag, img);
+        } else {
+            left.append(img);
+        }
+
+        let name = document.createElement("p");
+
+        name.innerText = "Title: " + data.Title;
+
+        name.setAttribute("style", "font-size:20px; font-weight:bold;")
+
+        let Released = document.createElement("p");
+
+        Released.innerText = "Year: " + data.Released;
+
+        let imdbID = document.createElement("p");
+        imdbID.setAttribute("style", "color:gold;");
+        imdbID.innerText = "imdbID: " + data.imdbRating + "*";
+
+        let Language = document.createElement("p");
+
+        Language.innerText = "Language: " + data.Language;
+
+        let Runtime = document.createElement("p");
+
+        Runtime.innerText = "Runtime: " + data.Runtime;
+
+        let Actors = document.createElement("p");
+
+        Actors.innerText = "Actors: " + data.Actors;
+
+        let Writer = document.createElement("p");
+
+        Writer.innerText = "Writer: " + data.Writer;
+
+        right.append(name, Released, Language, imdbID, Runtime, Actors, Writer);
+        details.append(left, right);
+
+        // details.style.marginBottom = "15px";
+    }
+
+</script>
+
+</html>

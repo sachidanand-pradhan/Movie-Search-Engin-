@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        background-color: black;
+        color: white;
+    }
+
+    #container {
+        width: 1100px;
+        display: grid;
+        grid-template-columns: repeat(4, 23%);
+        grid-gap: 10px;
+        margin: 20px auto;
+        background-color: black;
+    }
+
+    img {
+        width: 100%;
+        height: 150px;
+    }
+
+    /* #container div {
+        /* border: 2px solid red; */
+
+    /* } */
+
+    #container p {
+        margin-left: 10px;
+    }
+    .search{
+        width: 300px;
+        margin: auto;
+        /* border: 2px solid white; */
+        text-align: center;
+    }
+    .search p{
+        font-size: 20px;
+    }
+    .search input{
+        height: 20px;
+    }
+</style>
+
+<body>
+    <div class="search">
+        <p>Search Movies Name</p>
+        <input type="text" id="movie" placeholder="Enter movies title">
+        <button onclick="getMovies()">Search</button>
+    </div>
+    <div id="container"></div>
+</body>
+<script>
+
+    async function getMovies() {
+
+        let movie = document.getElementById("movie").value;
+
+        let res = await fetch(`https://www.omdbapi.com/?s=${movie}&apikey=${65714494}`);
+        let data = await res.json();
+        console.log(data)
+
+        if (data.Search == undefined) {
+            alert(`${movie} Movie not found!`);
+        } else {
+            showMovie(data);
+        }
+
+
+    }
+
+    let container = document.getElementById("container");
+
+    function showMovie(movies) {
+        // console.log("movies",movies.Search);
+        container.innerHTML = null;
+
+        movies.Search.forEach(function (movie) {
+
+
+            let div = document.createElement("div");
+
+            let img = document.createElement("img");
+
+            img.src = movie.Poster;
+
+            let name = document.createElement("p");
+
+            name.innerText = "Title: " + movie.Title;
+
+            let year = document.createElement("p");
+
+            year.innerText = "Year: " + movie.Year;
+
+            let imdbID = document.createElement("p");
+            imdbID.setAttribute("style", "color:gold;")
+
+            imdbID.innerText = "imdbID: " + movie.imdbID;
+
+
+            div.append(img, name, year, imdbID);
+            container.append(div)
+
+        });
+
+    }
+
+</script>
+
+</html>
